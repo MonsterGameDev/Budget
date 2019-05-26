@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Budget.Api.Entities;
 using Budget.Api.Extensions;
+using Budget.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,8 @@ namespace Budget.Api
 
             var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=BudgetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             services.AddDbContext<BudgetDbContext>(o => o.UseSqlServer(connectionString));
+
+            services.AddScoped<IAccountRepository, AccountRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

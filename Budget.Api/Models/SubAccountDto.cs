@@ -10,10 +10,10 @@ namespace Budget.Api.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public ICollection<PostingLineDto> PostingLines { get; set; }
+        public List<PostingLineDto> PostingLines { get; set; }
             = new List<PostingLineDto>();
         public int NumberOfPostingLines { get {
-                return PostingLines.Count;
+                return PostingLines.Count();
             }
         }
         public double Total { get {
