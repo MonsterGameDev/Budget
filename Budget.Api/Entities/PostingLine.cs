@@ -7,19 +7,18 @@ using System.Threading.Tasks;
 
 namespace Budget.Api.Entities
 {
-    public class SubAccount
+    public class PostingLine
     {
         [Key]
         public int Id { get; set; }
         [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
-        [MaxLength(200)]
+        [MaxLength(100)]
         public string Description { get; set; }
-        [ForeignKey("AccountId")]
-        public Account Account { get; set; }
-        public int AccountId { get; set; }
-
-        public ICollection<PostingLine> PostingLines { get; set; } = new List<PostingLine>();
+        public decimal Amount { get; set; }
+        public string Location { get; set; }
+        public DateTime Created { get; set; }
+        [ForeignKey("SubAccountId")]
+        public SubAccount SubAccount { get; set; }
+        public int SubAccountId { get; set; }
     }
 }
