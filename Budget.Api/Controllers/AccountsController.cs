@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace Budget.Api.Controllers
 {
-   
+
     [Route("api/accounts")]
-    public class AccountsController: Controller
+    public class AccountsController : Controller
     {
         private IAccountRepository _accountRepo;
         public AccountsController(IAccountRepository repo)
@@ -28,35 +28,14 @@ namespace Budget.Api.Controllers
             // Vælg om responset skal indeholde subAccounts
             if (!includeSubAccounts)
             {
-                var result = new List<AccountWithoutSubAccountsDto>();
-
-                foreach (var accountEntity in accountEntities)
-                {
-                    result.Add(new AccountWithoutSubAccountsDto()
-                    {
-                        Id = accountEntity.Id,
-                        Name = accountEntity.Name,
-                        Description = accountEntity.Description
-                    });
-                }
-
+                List<AccountWithoutSubAccountsDto> result 
+                    = _mapAccountsToDtoWithout(_accountRepo.GetAccounts(false));
                 return Ok(result);
             }
 
             // Med subaccounts (men uden PostingLines)
-            var resultWith = new List<AccountWithSubAccountsDto>();
 
-            foreach (var accountEntity in accountEntities)
-            {
-                resultWith.Add(new AccountWithSubAccountsDto()
-                {
-                    Id = accountEntity.Id,
-                    Name = accountEntity.Name,
-                    Description = accountEntity.Description,
-                    SubAccounts = _mapSubAccountsToDto(accountEntity.SubAccounts.ToList())
-                });
-            }
-
+            var resultWith = _mapAccountsToDtoWith(_accountRepo.GetAccounts(true));
             return Ok(resultWith);
 
 
@@ -64,7 +43,7 @@ namespace Budget.Api.Controllers
             // return Ok(AccountsDataStore.Current);
         }
 
-        [HttpGet("{id}", Name="GetAccount")]
+        [HttpGet("{id}", Name = "GetAccount")]
         public IActionResult GetAccount(int id, bool includeSubAccounts = false)
         {
             if (!_accountRepo.AccountExists(id)) return NotFound();
@@ -97,64 +76,159 @@ namespace Budget.Api.Controllers
         public IActionResult CreateAccount(
             [FromBody] AccountForEditingDto account)
         {
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            //ToDo Change
-            var maxId = AccountsDataStore.Current.Accounts.Max(a => a.Id);
 
-            var finishedAccount = new AccountDto()
+            var finalAccount = _mapAccountToEntity(account);
+            _accountRepo.CreateAccount(finalAccount);
+
+
+            if (!_accountRepo.Save())
             {
-                Id = ++maxId,
-                Name = account.Name,
-                Description = account.Description
-            };
+                return StatusCode(500, "A problem occured handling your request");
+            }
 
-            AccountsDataStore.Current.Accounts.Add(finishedAccount);
+            // Todo finalAccount.id = 0 her...
 
-            return CreatedAtRoute("GetAccount", new {id=finishedAccount.Id}, finishedAccount);
+            return CreatedAtRoute("GetAccount", new { id = finalAccount.Id }, finalAccount);
+
+
+
+            ////ToDo Change
+            //var maxId = AccountsDataStore.Current.Accounts.Max(a => a.Id);
+
+            //var finishedAccount = new AccountDto()
+            //{
+            //    Id = ++maxId,
+            //    Name = account.Name,
+            //    Description = account.Description
+            //};
+
+            //AccountsDataStore.Current.Accounts.Add(finishedAccount);
+
+
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateAccount(int id,
-            [FromBody] AccountForEditingDto editedAccount)
+            [FromBody] AccountForUpdatingDto editedAccount)
         {
-            var accountFromStore = AccountsDataStore.Current.Accounts
-                .FirstOrDefault(a => a.Id == id);
-            if (accountFromStore == null)
-            {
-                return NotFound();
-            }
-            if (!ModelState.IsValid)
+            if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            accountFromStore.Name = editedAccount.Name;
-            accountFromStore.Description = editedAccount.Description;
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult DeleteAccount(int id)
-        {
-            var account = AccountsDataStore.Current.Accounts
-                .FirstOrDefault(a => a.Id == id);
-            if(account == null)
+            if (!_accountRepo.AccountExists(id))
             {
                 return NotFound();
             }
 
-            AccountsDataStore.Current.Accounts.Remove(account);
+            Account accountFromStore = _accountRepo.GetAccount(id, false);
+
+            accountFromStore.Id = editedAccount.Id;
+            accountFromStore.Name = editedAccount.Name;
+            accountFromStore.Description = editedAccount.Description;
+
+            if (!_accountRepo.Save())
+            {
+                return StatusCode(500, "A problem happened while handling your request");
+            }
 
             return NoContent();
+                    
+            //var accountFromStore = AccountsDataStore.Current.Accounts
+            //    .FirstOrDefault(a => a.Id == id);
+            //if (accountFromStore == null)
+            //{
+            //    return NotFound();
+            //}
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
+
+            //accountFromStore.Name = editedAccount.Name;
+            //accountFromStore.Description = editedAccount.Description;
+
+            //return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteAccount(int id, bool deleteSubTree=false)
+        {
+            if (!_accountRepo.AccountExists(id)) return NotFound();
+
+            var accountToDelete = _accountRepo.GetAccount(id, true);
+            bool accountSubTreeExists = accountToDelete.SubAccounts.Count > 0;
+
+            if (!deleteSubTree && accountSubTreeExists)
+            {
+                return StatusCode(500, "Account constains subAccounts!");
+            }
+
+            _accountRepo.DeleteAccount(accountToDelete);
+
+            if (!_accountRepo.Save())
+            {
+                return StatusCode(500, "A problem happened while handling your request");
+            }
+
+
+            return NoContent();
+
+            //var account = AccountsDataStore.Current.Accounts
+            //    .FirstOrDefault(a => a.Id == id);
+            //if (account == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //AccountsDataStore.Current.Accounts.Remove(account);
+
+            //return NoContent();
         }
 
 
         // Mappers
-        private List<SubAccountWithoutPostingLinesDto> _mapSubAccountsToDto(List<SubAccount> sas)
+        private List<AccountWithoutSubAccountsDto> _mapAccountsToDtoWithout(IEnumerable<Account> accountsEntities) {
+            var result = new List<AccountWithoutSubAccountsDto>();
+
+            foreach (var accountEntity in accountsEntities)
+            {
+                result.Add(new AccountWithoutSubAccountsDto()
+                {
+                    Id = accountEntity.Id,
+                    Name = accountEntity.Name,
+                    Description = accountEntity.Description
+                });
+            }
+
+            return result;
+        }
+
+        private List<AccountWithSubAccountsDto> _mapAccountsToDtoWith(IEnumerable<Account> accountEntities)
+        {
+            var result = new List<AccountWithSubAccountsDto>();
+
+            foreach (var accountEntity in accountEntities)
+            {
+                result.Add(new AccountWithSubAccountsDto()
+                {
+                    Id = accountEntity.Id,
+                    Name = accountEntity.Name,
+                    Description = accountEntity.Description,
+                    SubAccounts = _mapSubAccountsToDto(accountEntity.SubAccounts.ToList())
+                });
+            }
+
+            return result;
+        }
+
+        private List<SubAccountWithoutPostingLinesDto>
+            _mapSubAccountsToDto(List<SubAccount> sas)
         {
             var result = new List<SubAccountWithoutPostingLinesDto>();
             foreach (var sa in sas)
@@ -168,6 +242,19 @@ namespace Budget.Api.Controllers
             }
 
             return result;
+        }
+
+        private Account _mapAccountToEntity(AccountForEditingDto account)
+        {
+
+            var newAccount = new Account()
+            {
+                Id = 0,
+                Name = account.Name,
+                Description = account.Description
+            };
+
+            return newAccount;
         }
     }
 }

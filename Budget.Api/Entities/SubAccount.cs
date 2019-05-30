@@ -11,15 +11,20 @@ namespace Budget.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
+
         [MaxLength(200)]
         public string Description { get; set; }
+
         [ForeignKey("AccountId")]
         public Account Account { get; set; }
+
         public int AccountId { get; set; }
 
-        public ICollection<PostingLine> PostingLines { get; set; } = new List<PostingLine>();
+        public ICollection<PostingLine> PostingLines { get; set; } 
+            = new List<PostingLine>();
     }
 }

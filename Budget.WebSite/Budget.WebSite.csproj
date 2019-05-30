@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Accounts\Create.cshtml" />
+    <Content Remove="Views\Accounts\Delete.cshtml" />
+    <Content Remove="Views\Accounts\Update.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\PostingLines\" />
+    <Folder Include="Views\SubAccounts\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Accounts\Create.cshtml" />
+    <None Include="Views\Accounts\Delete.cshtml" />
+    <None Include="Views\Accounts\Update.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+  </ItemGroup>
+
+</Project>

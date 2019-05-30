@@ -19,8 +19,7 @@ namespace Budget.Api.Mock
                     Id = 1,
                     Name = "Gaver Jul",
                     Description = "Julegaver",
-                    PostingLines = new List<PostingLineDto>(){ },
-                    SubAccounts = new List<SubAccountDto>(){
+                   SubAccounts = new List<SubAccountDto>(){
                         new SubAccountDto(){
                             Id = 1,
                             Name = "Mor",
@@ -31,7 +30,7 @@ namespace Budget.Api.Mock
                                     Description = "Creme",
                                     Location = "Matas",
                                     Amount = 175,
-                                    Created = new DateTime()
+                                    Created = DateTime.Now
                                 },
                                 new PostingLineDto(){
                                     Id = 2,
@@ -83,7 +82,6 @@ namespace Budget.Api.Mock
                     Id = 2,
                     Name = "Gaver Fødselsdage",
                     Description = "Fødselsdagsgaver",
-                    PostingLines = new List<PostingLineDto>(){ },
                     SubAccounts = new List<SubAccountDto>(){}
                 },
                 new AccountDto()
@@ -91,7 +89,6 @@ namespace Budget.Api.Mock
                     Id = 3,
                     Name = "Ferier",
                     Description = "Diverse faste ferier og udflugter",
-                    PostingLines = new List<PostingLineDto>(){ },
                     SubAccounts = new List<SubAccountDto>(){}
                 },
                 new AccountDto()
@@ -99,7 +96,6 @@ namespace Budget.Api.Mock
                     Id = 4,
                     Name = "Tøj",
                     Description = "Tøj budget",
-                    PostingLines = new List<PostingLineDto>(){ },
                     SubAccounts = new List<SubAccountDto>(){}
                 },
                 new AccountDto()
@@ -107,7 +103,6 @@ namespace Budget.Api.Mock
                     Id = 5,
                     Name = "Husholdning",
                     Description = "Dagligt forbrug: mad, cigaretter, personlig pleje mm",
-                    PostingLines = new List<PostingLineDto>(){ },
                     SubAccounts = new List<SubAccountDto>(){}
                 },
                 new AccountDto()
@@ -115,7 +110,6 @@ namespace Budget.Api.Mock
                     Id = 6,
                     Name = "Festivitas",
                     Description = "Diverse festivitas afholdt for vores penge",
-                    PostingLines = new List<PostingLineDto>(){ },
                     SubAccounts = new List<SubAccountDto>(){}
                 },
             };

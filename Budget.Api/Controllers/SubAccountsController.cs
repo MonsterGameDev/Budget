@@ -1,5 +1,6 @@
 ﻿using Budget.Api.Mock;
 using Budget.Api.Models;
+using Budget.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,16 +12,29 @@ namespace Budget.Api.Controllers
     [Route("api/accounts")]
     public class SubAccountsController: Controller
     {
-        [HttpGet("{accountId}/subaccounts")]
-        public IActionResult GetSubAccounts(int accountId)
+        private ISubAccountRepository _subAccountRepo;
+        public SubAccountsController(ISubAccountRepository repo)
         {
-            var account = AccountsDataStore.Current.Accounts.FirstOrDefault(a => a.Id == accountId);
-            if (account == null)
-            {
-                return NotFound();
-            }
+            _subAccountRepo = repo;
+        }
 
-            return Ok(account.SubAccounts);
+        [HttpGet("{accountId}/subaccounts")]
+        public IActionResult GetSubAccounts(int accountId, bool includePostingLines)
+        {
+            if (!_subAccountRepo.AccountExists(accountId)) return NotFound();
+
+            var subAccounts = _subAccountRepo.GetSubAccounts(accountId, includePostingLines);
+
+            return Ok(subAccounts);
+            
+
+            //var account = AccountsDataStore.Current.Accounts.FirstOrDefault(a => a.Id == accountId);
+            //if (account == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return Ok(account.SubAccounts);
         }
 
         [HttpGet("{accountId}/subaccounts/{id}", Name ="GetSubAccount")]

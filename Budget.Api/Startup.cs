@@ -24,10 +24,18 @@ namespace Budget.Api
                 .AddMvcOptions(o => o.OutputFormatters.Add(
                     new XmlDataContractSerializerOutputFormatter()));
 
+            //ToDo ryk til application.json
             var connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=BudgetDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             services.AddDbContext<BudgetDbContext>(o => o.UseSqlServer(connectionString));
 
+            services.AddCors(option => option.AddPolicy("CorsPolicyBudgetApi", builder => {
+                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+
+            }));
+
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<ISubAccountRepository, SubAccountRepository>();
+            services.AddScoped<IPostingLineRepository, PostingLineRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,14 +45,16 @@ namespace Budget.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors("CorsPolicyBudgetApi");
             budgetDbContext.EnsureSeedDataForContext();
 
             app.UseMvc();
 
+
+
             app.Run(async (context) =>
             {
-                await context.Response.WriteAsync("Hov - Det er ikke meningen at du skulle havne her");
+                await context.Response.WriteAsync("WebApi Up and Spinning...");
             });
         }
     }

@@ -4,22 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Budget.Api.Entities
+namespace Budget.Api.Models
 {
-    public class Account
+    public class AccountForUpdatingDto
     {
-        [Key]
         public int Id { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Du skal angive et navn")]
         [MaxLength(50)]
         public string Name { get; set; }
-
         [MaxLength(200)]
         public string Description { get; set; }
-
-        public ICollection<SubAccount> SubAccounts { get; set; } = 
-            new List<SubAccount>();
-
     }
 }

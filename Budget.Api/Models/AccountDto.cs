@@ -12,19 +12,15 @@ namespace Budget.Api.Models
         public string Description { get; set; }
         public List<SubAccountDto> SubAccounts { get; set; }
             = new List<SubAccountDto>();
-        public List<PostingLineDto> PostingLines { get; set; }
-            = new List<PostingLineDto>();
         public int NumberOfSubAccounts { get {
                 return SubAccounts.Count();
             }
         }
-        
-        //public double Total
-        //{
-        //    get
-        //    {
-        //        return PostingLines.Sum(pl => pl.Amount);
-        //    }
-        //}
+        public double Total { get
+            {
+                // ToDo - get sum of all postinglines in database
+                return 0;
+            }
+        }
     }
 }
