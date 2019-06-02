@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\AccountServicetryout.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Views\Accounts\Create.cshtml" />
     <Content Remove="Views\Accounts\Delete.cshtml" />
-    <Content Remove="Views\Accounts\Update.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +23,6 @@
   <ItemGroup>
     <None Include="Views\Accounts\Create.cshtml" />
     <None Include="Views\Accounts\Delete.cshtml" />
-    <None Include="Views\Accounts\Update.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,8 +10,8 @@ namespace Budget.WebSite.Services
     {
         Task<List<Account>> GetAccountsAsync(Boolean includeSubAccounts);
         Task<Account> GetAccountAsync(int id, Boolean includeSubAccounts);
-        Task CreateAccountAsync(Account account);
-        Task UpdateAccountAsync(int accountId, Account account);
+        Task<Uri> CreateAccountAsync(AccountForEditingDto account);
+        Task UpdateAccountAsync(int accountId, AccountForUpdatingDto account);
         Task DeleteAccountAsync(int accountId);
     }
 }

@@ -63,7 +63,7 @@ namespace Budget.Api.Services
 
         public void DeleteAccount(Account account)
         {
-            _budgetDbContext.Remove(account);   
+            _budgetDbContext.Accounts.Remove(account);   
         }
 
         public bool Save()

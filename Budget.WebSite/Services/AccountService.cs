@@ -63,19 +63,48 @@ namespace Budget.WebSite.Services
         }
         
 
-        public Task CreateAccountAsync(Account account)
+        public async Task<Uri> CreateAccountAsync(AccountForEditingDto account)
         {
-            throw new NotImplementedException();
+            string reqUrl = baseUrl;
+
+            //var request = new HttpRequestMessage(HttpMethod.Post, reqUrl);
+            //request.Headers.Add("ContentType", "application/json");
+
+            var client = _clientFactory.CreateClient();
+
+
+            HttpResponseMessage response = await client.PostAsJsonAsync(reqUrl, account);
+            response.EnsureSuccessStatusCode();
+
+            // return URI of the created resource.
+            return response.Headers.Location;
+
         }
 
-        public Task UpdateAccountAsync(int accountId, Account account)
+        
+        public async Task UpdateAccountAsync(int accountId, AccountForUpdatingDto account)
         {
-            throw new NotImplementedException();
+            string reqUrl = baseUrl + accountId;
+            
+            var client = _clientFactory.CreateClient();
+            
+            HttpResponseMessage response = await client.PutAsJsonAsync(reqUrl, account);
+
+            response.EnsureSuccessStatusCode();
+            
         }
 
-        public Task DeleteAccountAsync(int accountId)
+        public async Task DeleteAccountAsync(int accountId)
         {
-            throw new NotImplementedException();
+            string reqUrl = baseUrl + accountId + "?deleteSubTree=true";
+
+            var client = _clientFactory.CreateClient();
+
+            HttpResponseMessage response = await client.DeleteAsync(reqUrl);
+
+            response.EnsureSuccessStatusCode();
+
         }
+        
     }
 }
