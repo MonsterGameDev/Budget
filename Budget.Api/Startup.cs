@@ -51,7 +51,7 @@ namespace Budget.Api
             app.UseMvc();
 
 
-
+            // Status message
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync("WebApi Up and Spinning...");
