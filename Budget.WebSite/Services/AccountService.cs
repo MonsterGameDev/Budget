@@ -104,7 +104,6 @@ namespace Budget.WebSite.Services
 
             response.EnsureSuccessStatusCode();
 
-        }
-        
+        }        
     }
 }
